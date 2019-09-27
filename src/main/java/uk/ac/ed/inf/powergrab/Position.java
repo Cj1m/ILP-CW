@@ -21,10 +21,11 @@ public class Position {
 	public boolean inPlayArea() {
 		Position KFC = new Position(55.946233, -3.184319);
 		Position topOfMeadows = new Position(55.942617, -3.192473);
-		return inRegion(KFC, topOfMeadows);
+		
+		return inRectangularRegion(KFC, topOfMeadows);
 	}
 	
-	private boolean inRegion(Position topRight, Position bottomLeft) {
+	private boolean inRectangularRegion(Position topRight, Position bottomLeft) {
 		return this.latitude < topRight.latitude && this.latitude > bottomLeft.latitude
 				&& this.longitude < topRight.longitude && this.longitude > bottomLeft.longitude;
 	}
@@ -81,6 +82,7 @@ public class Position {
 			angle = 337.5;
 			break;
 		}
+		
 		return angle;
 	}
 }
