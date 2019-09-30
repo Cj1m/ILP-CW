@@ -4,35 +4,39 @@ public class Position {
 	public double latitude;
 	public double longitude;
 	public double travelDistance = 0.0003;
-	
+
 	public Position(double latitude, double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
-	
+
 	public Position nextPosition(Direction direction) {
+		// Determine direction angle and convert from degrees to radians
 		double directionAngle = Math.toRadians(getDirectionAngle(direction));
-		double nextLatitude = this.latitude + this.travelDistance * Math.cos(directionAngle);
-		double nextLongitude = this.longitude + this.travelDistance* Math.sin(directionAngle);
 		
+		// Calculate the resulting coordinates from moving in the given direction
+		double nextLatitude = this.latitude + this.travelDistance * Math.cos(directionAngle);
+		double nextLongitude = this.longitude + this.travelDistance * Math.sin(directionAngle);
+
 		return new Position(nextLatitude, nextLongitude);
 	}
-	
+
 	public boolean inPlayArea() {
+		// Define the diagonal boundaries of the play area
 		Position KFC = new Position(55.946233, -3.184319);
 		Position topOfMeadows = new Position(55.942617, -3.192473);
-		
+
 		return inRectangularRegion(KFC, topOfMeadows);
 	}
-	
+
 	private boolean inRectangularRegion(Position topRight, Position bottomLeft) {
 		return this.latitude < topRight.latitude && this.latitude > bottomLeft.latitude
 				&& this.longitude < topRight.longitude && this.longitude > bottomLeft.longitude;
 	}
-	
+
 	private double getDirectionAngle(Direction d) {
 		double angle = 0;
-		switch(d) {
+		switch (d) {
 		case N:
 			angle = 0;
 			break;
@@ -82,7 +86,7 @@ public class Position {
 			angle = 337.5;
 			break;
 		}
-		
+
 		return angle;
 	}
 }
