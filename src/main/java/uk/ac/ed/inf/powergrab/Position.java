@@ -3,7 +3,7 @@ package uk.ac.ed.inf.powergrab;
 public class Position {
 	public double latitude;
 	public double longitude;
-	public double travelDistance = 0.0003;
+	private final double travelDistance = 0.0003;
 
 	public Position(double latitude, double longitude) {
 		this.latitude = latitude;
@@ -11,12 +11,9 @@ public class Position {
 	}
 
 	public Position nextPosition(Direction direction) {
-		// Determine direction angle and convert from degrees to radians
-		double directionAngle = Math.toRadians(getDirectionAngle(direction));
-		
 		// Calculate the resulting coordinates from moving in the given direction
-		double nextLatitude = this.latitude + this.travelDistance * Math.cos(directionAngle);
-		double nextLongitude = this.longitude + this.travelDistance * Math.sin(directionAngle);
+		double nextLatitude = this.latitude + this.travelDistance * direction.cos();
+		double nextLongitude = this.longitude + this.travelDistance * direction.sin();
 
 		return new Position(nextLatitude, nextLongitude);
 	}
@@ -30,63 +27,9 @@ public class Position {
 	}
 
 	private boolean inRectangularRegion(Position topRight, Position bottomLeft) {
+		// Return true if this position is within rectangular region of parameters
+		// Otherwise return false
 		return this.latitude < topRight.latitude && this.latitude > bottomLeft.latitude
 				&& this.longitude < topRight.longitude && this.longitude > bottomLeft.longitude;
-	}
-
-	private double getDirectionAngle(Direction d) {
-		double angle = 0;
-		switch (d) {
-		case N:
-			angle = 0;
-			break;
-		case NNE:
-			angle = 22.5;
-			break;
-		case NE:
-			angle = 45;
-			break;
-		case ENE:
-			angle = 67.5;
-			break;
-		case E:
-			angle = 90;
-			break;
-		case ESE:
-			angle = 112.5;
-			break;
-		case SE:
-			angle = 135;
-			break;
-		case SSE:
-			angle = 157.5;
-			break;
-		case S:
-			angle = 180;
-			break;
-		case SSW:
-			angle = 202.5;
-			break;
-		case SW:
-			angle = 225;
-			break;
-		case WSW:
-			angle = 247.5;
-			break;
-		case W:
-			angle = 270;
-			break;
-		case WNW:
-			angle = 292.5;
-			break;
-		case NW:
-			angle = 315;
-			break;
-		case NNW:
-			angle = 337.5;
-			break;
-		}
-
-		return angle;
 	}
 }
