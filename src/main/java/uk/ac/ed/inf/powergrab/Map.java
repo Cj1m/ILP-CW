@@ -58,10 +58,10 @@ public class Map {
         return powerStations;
     }
 
-    public PowerStation[] getPowerStations(Position position){
+    public PowerStation[] getPowerStationsInRange(Position dronePosition){
         ArrayList<PowerStation> powerStationsList = new ArrayList<PowerStation>();
         for(PowerStation ps : this.powerStations){
-            if(approxEq(position, ps.getPosition())){
+            if(ps.inRange(dronePosition)){
                 powerStationsList.add(ps);
             }
         }
@@ -100,14 +100,5 @@ public class Map {
         mapStream.close();
         mapConn.disconnect();
         return json;
-    }
-
-    private boolean approxEq(double d0, double d1) {
-        final double epsilon = 0.00025;
-        return Math.abs(d0 - d1) < epsilon;
-    }
-
-    private boolean approxEq(Position p0, Position p1) {
-        return approxEq(p0.latitude, p1.latitude) && approxEq(p0.longitude, p1.longitude);
     }
 }

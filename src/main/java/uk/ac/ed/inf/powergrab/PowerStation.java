@@ -4,11 +4,18 @@ public class PowerStation {
     private double coins;
     private double power;
     private Position position;
+    private final double RANGE = 0.00025;
 
     public PowerStation(Position position, double coins, double power){
         this.position = position;
         this.coins = coins;
         this.power = power;
+    }
+
+    public boolean inRange(Position dronePosition){
+        double distanceToDrone = Math.sqrt(Math.pow((this.position.latitude - dronePosition.latitude), 2) +
+                                            Math.pow((this.position.longitude - dronePosition.longitude), 2));
+        return distanceToDrone <= this.RANGE;
     }
 
     public double takeCoins(){

@@ -32,7 +32,7 @@ public class StatelessDrone {
         for(int i = 0; i < 16; i++){
             Direction direction = Direction.values()[i];
             Position positionAfterMoving = this.position.nextPosition(direction);
-            PowerStation[] powerStations = this.map.getPowerStations(positionAfterMoving);
+            PowerStation[] powerStations = this.map.getPowerStationsInRange(positionAfterMoving);
 
             if (powerStations.length > 0){
                 double heuristic = 0;
@@ -40,7 +40,7 @@ public class StatelessDrone {
                     heuristic += ps.getPower() + ps.getCoins();
                 }
 
-                if(heuristic > maxValue){
+                if(heuristic > maxValue && positionAfterMoving.inPlayArea()){
                     maxValue = heuristic;
                     maxInd = i;
                 }
@@ -55,6 +55,7 @@ public class StatelessDrone {
         if(maxValue > 0){
             direction = Direction.values()[maxInd];
         }else{
+            System.out.println(zeroIndices.size());
             int randomDirectionIndex = rnd.nextInt(zeroIndices.size());
             int randomZeroIndex = zeroIndices.get(randomDirectionIndex);
             direction = Direction.values()[randomZeroIndex];
@@ -64,7 +65,7 @@ public class StatelessDrone {
     }
 
     public void collectPowerAndCoins(){
-        PowerStation[] powerStationsInRange = map.getPowerStations(this.position);
+        PowerStation[] powerStationsInRange = map.getPowerStationsInRange(this.position);
         //TODO remember your coins and power cant go negative homie
         //GAY SHIT
         float jahcoinsbefore = this.coins;
