@@ -10,16 +10,26 @@ public class App
 {
     public static void main( String[] args )
     {
-        Map map = new Map("16","10","2019");
-        Position startPosition = new Position(55.944425, -3.188396);
-        StatelessDrone drone = new StatelessDrone(startPosition, map);
+        String day = args[0];
+        String month = args[1];
+        String year = args[2];
+        double droneStartLatitude = Double.parseDouble(args[3]);
+        double droneStartLongitude = Double.parseDouble(args[4]);
+        long seed = Long.parseLong(args[5]);
+        String droneType = args[6];
+
+        Map map = new Map(day,month,year);
+        Position startPosition = new Position(droneStartLatitude, droneStartLongitude);
+        //Todo Drone drone = either Stateless
+        StatelessDrone drone = new StatelessDrone(startPosition, map, seed);
 
         for(int i  = 0; i < 250; i++) {
             drone.move();
         }
 
         try {
-            map.saveMapToFile("stateless","16","10","2019");
+            map.saveMapToFile(droneType, day, month, year);
+            drone.saveLogToFile(droneType, day, month, year);
         } catch (IOException e) {
             e.printStackTrace();
         }

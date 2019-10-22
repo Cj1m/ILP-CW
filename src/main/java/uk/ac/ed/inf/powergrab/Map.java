@@ -87,7 +87,7 @@ public class Map {
         // Convert map to JSON
         String fileContent = map.toJson();
 
-        // Filename in the form: Dronetype-DD-MM-YYYY.geojson
+        // Filename in the form: dronetype-DD-MM-YYYY.geojson
         String filename = String.format("./%s-%s-%s-%s.geojson", droneType, day, month, year);
 
         // Write content to GeoJSON file
