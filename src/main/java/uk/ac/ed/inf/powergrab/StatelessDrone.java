@@ -86,18 +86,11 @@ public class StatelessDrone {
 
     public void collectPowerAndCoins(){
         PowerStation[] powerStationsInRange = map.getPowerStationsInRange(this.position);
-        //GAY SHIT
-        double jahcoinsbefore = this.coins;
-        double jahpowerbefore = this.power;
-        //END OF GAY SHIT
+
         for(PowerStation ps : powerStationsInRange){
             this.coins += ps.takeCoins(this.coins);
             this.power += ps.takePower(this.power);
         }
-        //MORE GAY SHIT
-        System.out.println("Coins gain:" + (this.coins - jahcoinsbefore));
-        System.out.println("Power gain:" + (this.power - jahpowerbefore));
-        //END OF MORe GAY SHIT
     }
 
     public boolean hasPowerToMove(){
