@@ -52,12 +52,12 @@ public class AppTest extends TestCase {
 		assertFalse(pos.inPlayArea());
 	}
 	
-	boolean approxEq(double d0, double d1) {
+	static boolean approxEq(double d0, double d1) {
 		final double epsilon = 1.0E-12d;
 		return Math.abs(d0 - d1) < epsilon;
 	}
 	
-	boolean approxEq(Position p0, Position p1) {
+	static boolean approxEq(Position p0, Position p1) {
 		return approxEq(p0.latitude, p1.latitude) && approxEq(p0.longitude, p1.longitude); 
 	}
 	

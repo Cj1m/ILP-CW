@@ -5,23 +5,32 @@ import java.util.Random;
 
 public class StatelessDrone {
     private Random rnd;
-    private Position position;
     private Map map;
-    private float coins;
-    private float power;
+    public Position position;
+    public double coins;
+    public double power;
+    private final double POWER_TO_MOVE = 1.25;
 
     public StatelessDrone(Position startPosition, Map map){
         this.position = startPosition;
+        this.power = 250;
         this.map = map;
         rnd = new Random(5678);
+
+        //Add start position to flight path
+        this.map.addFlightPathPoint(startPosition);
     }
 
     public void move(){
-        Position lastPosition = position;
+        if(!hasPowerToMove()){
+            return;
+        }
+
         Direction direction = pickDirection();
         this.position = this.position.nextPosition(direction);
+        this.power -= this.POWER_TO_MOVE;
         collectPowerAndCoins();
-        logMovement(lastPosition, direction, this.position, this.coins, this.power);
+        logMovement(direction, this.position, this.coins, this.power);
     }
 
     public Direction pickDirection(){
@@ -66,25 +75,27 @@ public class StatelessDrone {
 
     public void collectPowerAndCoins(){
         PowerStation[] powerStationsInRange = map.getPowerStationsInRange(this.position);
-        //TODO remember your coins and power cant go negative homie
         //GAY SHIT
-        float jahcoinsbefore = this.coins;
-        float jahpowerbefore = this.power;
+        double jahcoinsbefore = this.coins;
+        double jahpowerbefore = this.power;
         //END OF GAY SHIT
         for(PowerStation ps : powerStationsInRange){
-            this.coins += ps.takeCoins();
-            this.power += ps.takePower();
+            this.coins += ps.takeCoins(this.coins);
+            this.power += ps.takePower(this.power);
         }
-        //MORE GAY SHIt
+        //MORE GAY SHIT
         System.out.println("Coins gain:" + (this.coins - jahcoinsbefore));
         System.out.println("Power gain:" + (this.power - jahpowerbefore));
-        //END OF MORe GAY SHit
+        //END OF MORe GAY SHIT
     }
 
-    private void logMovement(Position previousPosition,
-                             Direction direction,
+    public boolean hasPowerToMove(){
+        return this.power >= this.POWER_TO_MOVE;
+    }
+
+    private void logMovement(Direction direction,
                              Position nextPosition,
-                             float coins, float power){
-        map.addPath(previousPosition, nextPosition);
+                             double coins, double power){
+        map.addFlightPathPoint(nextPosition);
     }
 }

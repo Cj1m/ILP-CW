@@ -18,15 +18,29 @@ public class PowerStation {
         return distanceToDrone <= this.RANGE;
     }
 
-    public double takeCoins(){
+    public double takeCoins(double droneCoins){
         double coinsToTake = this.coins;
-        this.coins = 0;
+
+        // Account for edge case where drone has less coins than the coin deficit
+        // This prevents the drone's coins from going negative
+        if(this.coins < 0 && Math.abs(this.coins) > droneCoins){
+            coinsToTake = -droneCoins;
+        }
+
+        this.coins -= coinsToTake;
         return coinsToTake;
     }
 
-    public double takePower(){
+    public double takePower(double dronePower){
         double powerToTake = this.power;
-        this.power = 0;
+
+        // Account for edge case where drone has less power than the power deficit
+        // This prevents the drone's power from going negative
+        if(this.power < 0 && Math.abs(this.power) > dronePower){
+            powerToTake = -dronePower;
+        }
+
+        this.power -= powerToTake;
         return powerToTake;
     }
 
