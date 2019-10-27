@@ -3,6 +3,7 @@ package uk.ac.ed.inf.powergrab;
 public class Position {
 	public double latitude;
 	public double longitude;
+
 	// Distance drone can travel in one move
 	private final double travelDistance = 0.0003;
 

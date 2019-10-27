@@ -119,7 +119,6 @@ public class Map {
         mapConn.connect();
         InputStream mapStream = mapConn.getInputStream();
         String json = IOUtils.toString(mapStream, "UtF-8");
-        //TODO Confirm this
         mapStream.close();
         mapConn.disconnect();
         return json;

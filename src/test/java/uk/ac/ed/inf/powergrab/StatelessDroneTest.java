@@ -48,6 +48,16 @@ public class StatelessDroneTest extends TestCase {
         assertEquals(0.0, drone.coins);
     }
 
+    public void testCannotMoveWithoutSufficientPower(){
+        Position position = new Position(55.9461935,-3.1888266);
+        StatelessDrone drone = new StatelessDrone(position, this.map, this.seed);
+        drone.power = 0;
+
+        drone.move();
+
+        assertTrue(AppTest.approxEq(position, drone.position));
+    }
+
     public void testPickDirection(){
         //Position just south of a positive power station
         Position position = new Position(55.9457488 - 0.00025,-3.1895536);
