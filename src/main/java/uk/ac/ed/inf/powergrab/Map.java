@@ -72,6 +72,13 @@ public class Map {
         return powerStationsList.toArray(new PowerStation[powerStationsList.size()]);
     }
 
+    public PowerStation[] getPowerStations(){
+        // Returns all power stations on the map
+        // Used only by stateful drone
+
+        return this.powerStations;
+    }
+
     public void addFlightPathPoint(Position dronePosition){
         // Format coordinates to work with GeoJSON
         Point nextPoint = Point.fromLngLat(dronePosition.longitude, dronePosition.latitude);
@@ -118,7 +125,7 @@ public class Map {
         mapConn.setDoInput(true);
         mapConn.connect();
         InputStream mapStream = mapConn.getInputStream();
-        String json = IOUtils.toString(mapStream, "UtF-8");
+        String json = IOUtils.toString(mapStream, "UTF-8");
         mapStream.close();
         mapConn.disconnect();
         return json;

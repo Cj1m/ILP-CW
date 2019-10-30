@@ -16,12 +16,17 @@ public class App
         double droneStartLatitude = Double.parseDouble(args[3]);
         double droneStartLongitude = Double.parseDouble(args[4]);
         long seed = Long.parseLong(args[5]);
-        String droneType = args[6];
+        String droneType = "stateful"; //args[6];
 
         Map map = new Map(day,month,year);
         Position startPosition = new Position(droneStartLatitude, droneStartLongitude);
-        //Todo Drone drone = either Stateless
-        StatelessDrone drone = new StatelessDrone(startPosition, map, seed);
+        Drone drone = null;
+
+        if(droneType.equals("stateless")){
+            drone = new StatelessDrone(startPosition, map, seed);
+        }else if (droneType.equals("stateful")){
+            drone = new StatefulDrone(startPosition, map, seed);
+        }
 
         for(int i  = 0; i < 250; i++) {
             drone.move();

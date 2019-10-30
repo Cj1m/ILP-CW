@@ -9,6 +9,7 @@ public class StatelessDrone extends Drone {
         super(startPosition, map, seed);
     }
 
+    @Override
     public Direction pickDirection(){
         int maxInd = 0;
         double maxValue = 0;
