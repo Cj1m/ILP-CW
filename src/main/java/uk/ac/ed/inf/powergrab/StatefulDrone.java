@@ -18,9 +18,12 @@ public class StatefulDrone extends Drone {
         if(angleToTargetPosition < 0){
             angleToTargetPosition += 360;
         }
-        Direction d = getClosestDirectionToAngle(angleToTargetPosition);
 
-        return d;
+        Direction directionToMove = getClosestDirectionToAngle(angleToTargetPosition);
+        //while(!this.position.nextPosition(directionToMove).inPlayArea()){
+            //TODO
+        //}
+        return getClosestDirectionToAngle(angleToTargetPosition);
     }
 
     private Direction getClosestDirectionToAngle(double angle){
@@ -48,9 +51,7 @@ public class StatefulDrone extends Drone {
     }
 
     private double calculatePowerStationHeuristic(PowerStation ps){
-        Position psPosition = ps.getPosition();
-        double distanceToPs= Math.sqrt(Math.pow((this.position.latitude - psPosition.latitude), 2) +
-                Math.pow((this.position.longitude - psPosition.longitude), 2));
+        double distanceToPs= ps.getDistanceToPosition(this.position);
 
         return (ps.getCoins() + ps.getPower()) / distanceToPs;
     }

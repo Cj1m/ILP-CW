@@ -13,8 +13,7 @@ public class PowerStation {
     }
 
     public boolean inRange(Position dronePosition){
-        double distanceToDrone = Math.sqrt(Math.pow((this.position.latitude - dronePosition.latitude), 2) +
-                                            Math.pow((this.position.longitude - dronePosition.longitude), 2));
+        double distanceToDrone = this.getDistanceToPosition(dronePosition);
         return distanceToDrone <= this.RANGE;
     }
 
@@ -44,6 +43,12 @@ public class PowerStation {
         return powerToTake;
     }
 
+    public double getDistanceToPosition(Position position){
+        return Math.sqrt(Math.pow((this.position.latitude - position.latitude), 2) +
+                Math.pow((this.position.longitude - position.longitude), 2));
+    }
+
+    //TODO review is these are even used
     public double getCoins(){
         return this.coins;
     }

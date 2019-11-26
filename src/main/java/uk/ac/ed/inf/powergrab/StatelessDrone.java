@@ -12,39 +12,48 @@ public class StatelessDrone extends Drone {
     @Override
     public Direction pickDirection(){
         int maxInd = 0;
-        double maxValue = 0;
-        ArrayList<Integer> zeroIndices = new ArrayList<Integer>();
-        //TODO case where stateless drone is surrounded by negative powerstations
-        for(int i = 0; i < 16; i++){
-            Direction direction = Direction.values()[i];
+        double maxHeuristic = 0;
+        Direction[] possibleDirections = Direction.values();
+        ArrayList<Integer> zeroStationsIndices = new ArrayList<Integer>();
+
+        for(int i = 0; i < possibleDirections.length; i++){
+            Direction direction = possibleDirections[i];
             Position positionAfterMoving = this.position.nextPosition(direction);
-            PowerStation[] powerStations = this.map.getPowerStationsInRange(positionAfterMoving);
 
-            if (powerStations.length > 0){
-                double heuristic = 0;
-                for(PowerStation ps : powerStations){
-                    heuristic += ps.getPower() + ps.getCoins();
-                }
+            // Don't consider positions outwith play area
+            if (!positionAfterMoving.inPlayArea()) continue;
 
-                if(heuristic > maxValue && positionAfterMoving.inPlayArea()){
-                    maxValue = heuristic;
-                    maxInd = i;
-                }
-            }else{
-                if(positionAfterMoving.inPlayArea()){
-                    zeroIndices.add(i);
-                }
+            PowerStation powerStation = this.map.getInRangePowerStation(positionAfterMoving);
+            double heuristic = 0;
+
+            if(powerStation != null){
+                // Calculate heuristic if a power station is in range
+                heuristic = powerStation.getPower() + powerStation.getCoins();
+            }else {
+                // Store 'safe' power station index
+                zeroStationsIndices.add(i);
+            }
+
+            // Update max heuristic
+            if(heuristic > maxHeuristic){
+                maxHeuristic = heuristic;
+                maxInd = i;
             }
         }
 
         Direction direction;
-        if(maxValue > 0){
-            direction = Direction.values()[maxInd];
+
+        // Case where there are no green stations in range
+        if(maxHeuristic == 0){
+            // Choose a random 'safe' direction
+            int randomDirectionIndex = rnd.nextInt(zeroStationsIndices.size());
+            int randomZeroIndex = zeroStationsIndices.get(randomDirectionIndex);
+            direction = possibleDirections[randomZeroIndex];
         }else{
-            System.out.println(zeroIndices.size());
-            int randomDirectionIndex = rnd.nextInt(zeroIndices.size());
-            int randomZeroIndex = zeroIndices.get(randomDirectionIndex);
-            direction = Direction.values()[randomZeroIndex];
+            // In this case there is either green station(s) in range or the drone is surrounded by red stations
+
+            // Choose the direction of the best station
+            direction = possibleDirections[maxInd];
         }
 
         return direction;

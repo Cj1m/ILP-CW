@@ -16,7 +16,7 @@ public class App
         double droneStartLatitude = Double.parseDouble(args[3]);
         double droneStartLongitude = Double.parseDouble(args[4]);
         long seed = Long.parseLong(args[5]);
-        String droneType = "stateful"; //args[6];
+        String droneType = "stateless"; //args[6];
 
         Map map = new Map(day,month,year);
         Position startPosition = new Position(droneStartLatitude, droneStartLongitude);

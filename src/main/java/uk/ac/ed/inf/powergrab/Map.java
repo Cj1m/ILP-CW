@@ -72,6 +72,23 @@ public class Map {
         return powerStationsList.toArray(new PowerStation[powerStationsList.size()]);
     }
 
+    public PowerStation getInRangePowerStation(Position dronePosition){
+        PowerStation nearestStation = null;
+        double nearestDistance = 100000000;
+
+        for(int i = 0; i < this.powerStations.length; i++){
+            double distanceToPowerStation = this.powerStations[i].getDistanceToPosition(dronePosition);
+            boolean inRange = this.powerStations[i].inRange(dronePosition);
+
+            if((inRange && distanceToPowerStation < nearestDistance)){
+                nearestStation = this.powerStations[i];
+                nearestDistance = distanceToPowerStation;
+            }
+        }
+
+        return nearestStation;
+    }
+
     public PowerStation[] getPowerStations(){
         // Returns all power stations on the map
         // Used only by stateful drone

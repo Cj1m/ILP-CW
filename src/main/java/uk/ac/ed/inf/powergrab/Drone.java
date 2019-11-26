@@ -6,11 +6,11 @@ import java.util.Random;
 import java.util.StringJoiner;
 
 public abstract class Drone {
-    public Random rnd;
-    public Map map;
-    public Position position;
-    public double coins;
-    public double power;
+    protected Random rnd;
+    protected Map map;
+    protected Position position;
+    protected double coins;
+    protected double power;
 
     private StringJoiner movementLog;
     private final double POWER_TO_MOVE = 1.25;
@@ -47,11 +47,11 @@ public abstract class Drone {
     }
 
     public void collectPowerAndCoins(){
-        PowerStation[] powerStationsInRange = map.getPowerStationsInRange(this.position);
+        PowerStation nearestStation = map.getInRangePowerStation(this.position);
 
-        for(PowerStation ps : powerStationsInRange){
-            this.coins += ps.takeCoins(this.coins);
-            this.power += ps.takePower(this.power);
+        if(nearestStation != null){
+            this.coins += nearestStation.takeCoins(this.coins);
+            this.power += nearestStation.takePower(this.power);
         }
     }
 
