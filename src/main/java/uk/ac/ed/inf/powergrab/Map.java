@@ -61,17 +61,6 @@ public class Map {
         return powerStations;
     }
 
-    public PowerStation[] getPowerStationsInRange(Position dronePosition){
-        ArrayList<PowerStation> powerStationsList = new ArrayList<PowerStation>();
-        for(PowerStation ps : this.powerStations){
-            if(ps.inRange(dronePosition)){
-                powerStationsList.add(ps);
-            }
-        }
-
-        return powerStationsList.toArray(new PowerStation[powerStationsList.size()]);
-    }
-
     public PowerStation getInRangePowerStation(Position dronePosition){
         PowerStation nearestStation = null;
         double nearestDistance = 100000000;
