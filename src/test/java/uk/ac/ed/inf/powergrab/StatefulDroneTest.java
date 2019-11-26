@@ -53,4 +53,23 @@ public class StatefulDroneTest extends TestCase {
 
         assertTrue(alwaysInPlayArea);
     }
+
+    public void testNeverLoseCoins(){
+        //Position just south of a positive power station
+        Position position = new Position(55.944425, -3.188396);
+        StatefulDrone drone = new StatefulDrone(position, this.map, this.seed);
+        double previousCoins = 0;
+
+        boolean neverLoseCoins = true;
+        for(int i = 0; i < 250; i++){
+            drone.move();
+            if(drone.coins < previousCoins){
+                neverLoseCoins = false;
+                break;
+            }
+            previousCoins = drone.coins;
+        }
+
+        assertTrue(neverLoseCoins);
+    }
 }

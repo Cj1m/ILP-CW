@@ -1,9 +1,18 @@
 package uk.ac.ed.inf.powergrab;
 
 public class StatefulDrone extends Drone {
+    private PowerStation lastVisitedPowerStation;
 
     public StatefulDrone(Position startPosition, Map map, Long seed) {
         super(startPosition, map, seed);
+    }
+
+    public void move(){
+        super.move();
+
+        // Record the visited power station
+        PowerStation visitedPs = this.map.getInRangePowerStation(this.position);
+        if(visitedPs != null) lastVisitedPowerStation = visitedPs;
     }
 
     @Override
@@ -18,9 +27,7 @@ public class StatefulDrone extends Drone {
         if(angleToTargetPosition < 0) angleToTargetPosition += 360;
 
         Direction directionToMove = getClosestDirectionToAngle(angleToTargetPosition);
-        //while(!this.position.nextPosition(directionToMove).inPlayArea()){
-            //TODO
-        //}
+
         return getClosestDirectionToAngle(angleToTargetPosition);
     }
 
@@ -59,12 +66,6 @@ public class StatefulDrone extends Drone {
         }
 
         return bestDirection;
-//        double directionIncrements = 360.0 / allDirections.length;
-//        int indexOfClosestAngle =  ((int) Math.round(angle / directionIncrements)) % allDirections.length;
-//
-//        return allDirections[indexOfClosestAngle];
-
-
     }
 
     private Position getTargetPowerStationPosition(){
@@ -78,6 +79,10 @@ public class StatefulDrone extends Drone {
                 bestHeuristic = heuristic;
                 bestPowerStation = ps;
             }
+        }
+
+        if(bestHeuristic == 0){
+            bestPowerStation = this.lastVisitedPowerStation;
         }
 
         return bestPowerStation.getPosition();
