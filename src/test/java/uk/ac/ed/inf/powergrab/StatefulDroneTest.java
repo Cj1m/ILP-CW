@@ -36,4 +36,21 @@ public class StatefulDroneTest extends TestCase {
 
         assertEquals(Direction.N, directionToMove);
     }
+
+    public void testAlwaysInPlayArea(){
+        //Position just south of a positive power station
+        Position position = new Position(55.944425, -3.188396);
+        StatefulDrone drone = new StatefulDrone(position, this.map, this.seed);
+
+        boolean alwaysInPlayArea = true;
+        for(int i = 0; i < 250; i++){
+            drone.move();
+            if(!drone.position.inPlayArea()){
+                alwaysInPlayArea = false;
+                break;
+            }
+        }
+
+        assertTrue(alwaysInPlayArea);
+    }
 }

@@ -22,6 +22,7 @@ public enum Direction {
 	// Store sin and cos so there is no need to recompute them
 	private final double sin;
 	private final double cos;
+	private final double degrees;
 
 	// Constructor
 	// Called only once for each Direction
@@ -29,6 +30,7 @@ public enum Direction {
 		// Compute sin and cos for the Direction
 		this.sin = Math.sin(Math.toRadians(angle));
 		this.cos = Math.cos(Math.toRadians(angle));
+		this.degrees = angle;
 	}
 
 	public double sin() {
@@ -39,5 +41,10 @@ public enum Direction {
 	public double cos() {
 		// Cos of Direction angle
 		return this.cos;
+	}
+
+	public double degrees(){
+		// Angle of Direction
+		return this.degrees;
 	}
 }
