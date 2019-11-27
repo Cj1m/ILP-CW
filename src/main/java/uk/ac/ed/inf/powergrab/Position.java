@@ -34,4 +34,8 @@ public class Position {
 		return this.latitude < topRight.latitude && this.latitude > bottomLeft.latitude
 				&& this.longitude < topRight.longitude && this.longitude > bottomLeft.longitude;
 	}
+
+	public boolean equals(Position otherPosition){
+		return (this.latitude == otherPosition.latitude && this.longitude == otherPosition.longitude);
+	}
 }

@@ -1,18 +1,20 @@
 package uk.ac.ed.inf.powergrab;
 
+import java.util.ArrayList;
+
 public class StatefulDrone extends Drone {
-    private PowerStation lastVisitedPowerStation;
+    private ArrayList<Position> visitedPositions;
 
     public StatefulDrone(Position startPosition, Map map, Long seed) {
         super(startPosition, map, seed);
+        this.visitedPositions = new ArrayList<Position>();
     }
 
     public void move(){
         super.move();
 
-        // Record the visited power station
-        PowerStation visitedPs = this.map.getInRangePowerStation(this.position);
-        if(visitedPs != null) lastVisitedPowerStation = visitedPs;
+        // Record move
+        this.visitedPositions.add(this.position);
     }
 
     @Override
@@ -28,14 +30,14 @@ public class StatefulDrone extends Drone {
 
         Direction directionToMove = getClosestDirectionToAngle(angleToTargetPosition);
 
-        return getClosestDirectionToAngle(angleToTargetPosition);
+        return directionToMove;
     }
 
     private Direction getClosestDirectionToAngle(double angle){
         Direction[] allDirections = Direction.values();
         Direction bestDirection = null;
         double leastError = 360;
-
+        Direction reverseDirection = null;
         for(int i = 0; i < allDirections.length; i++){
             Direction direction = allDirections[i];
             Position nextPosition = this.position.nextPosition(direction);
@@ -44,6 +46,14 @@ public class StatefulDrone extends Drone {
             if(!nextPosition.inPlayArea()){
                 continue;
             }
+
+            if(this.visitedPositions.size() > 1){
+                if(this.visitedPositions.get(this.visitedPositions.size() - 2).equals(nextPosition)){
+                    reverseDirection = direction;
+                    continue;
+                }
+            }
+
 
             PowerStation psAtDirection = this.map.getInRangePowerStation(nextPosition);
             if(psAtDirection != null){
@@ -65,27 +75,31 @@ public class StatefulDrone extends Drone {
 
         }
 
+        if(bestDirection == null){
+            bestDirection =reverseDirection;
+        }
+
         return bestDirection;
     }
 
     private Position getTargetPowerStationPosition(){
         PowerStation[] powerStations = this.map.getPowerStations();
 
-        PowerStation bestPowerStation = powerStations[0];
-        double bestHeuristic = this.calculatePowerStationHeuristic(bestPowerStation);
+        Position bestPowerStationPosition = powerStations[0].getPosition();
+        double bestHeuristic = this.calculatePowerStationHeuristic(powerStations[0]);
         for(PowerStation ps : powerStations){
             double heuristic = this.calculatePowerStationHeuristic(ps);
             if(heuristic > bestHeuristic){
                 bestHeuristic = heuristic;
-                bestPowerStation = ps;
+                bestPowerStationPosition = ps.getPosition();
             }
         }
 
         if(bestHeuristic == 0){
-            bestPowerStation = this.lastVisitedPowerStation;
+            bestPowerStationPosition = this.visitedPositions.get(this.visitedPositions.size() - 1);
         }
 
-        return bestPowerStation.getPosition();
+        return bestPowerStationPosition;
     }
 
     private double calculatePowerStationHeuristic(PowerStation ps){
