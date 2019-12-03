@@ -30,23 +30,27 @@ public abstract class Drone {
     protected abstract Direction pickDirection();
 
     public void move(){
-        if(!hasPowerToMove()){
-            return;
-        }
+        // Only move if drone has sufficient power
+        if(!hasPowerToMove()) return;
 
         Position priorPosition = this.position;
 
+        // Pick a direction and move
         Direction directionToMove = pickDirection();
         this.position = this.position.nextPosition(directionToMove);
         this.power -= this.POWER_TO_MOVE;
 
+        // Check if there are charging stations in range, charge if so
         collectPowerAndCoins();
 
+        // Update flight path and log movement
         map.addFlightPathPoint(this.position);
-        logMovement(priorPosition, directionToMove, this.position, this.coins, this.power);
+        this.logMovement(priorPosition, directionToMove, this.position, this.coins, this.power);
     }
 
     public void collectPowerAndCoins(){
+        // Checks if there is a charging station in range, charges if so
+
         ChargingStation nearestStation = map.getInRangeChargingStation(this.position);
 
         if(nearestStation != null){
@@ -63,7 +67,8 @@ public abstract class Drone {
                              Direction direction,
                              Position nextPosition,
                              double coins, double power){
-        //TODO move this function somewhere else
+        // Records movement to movement log
+
         String logEntry = String.format("%f,%f,%s,%f,%f,%f,%f", priorPosition.latitude, priorPosition.longitude,
                 direction.name(), nextPosition.latitude, nextPosition.longitude, coins, power);
         movementLog.add(logEntry);
