@@ -13,11 +13,17 @@ public class ChargingStation {
     }
 
     public boolean inRange(Position dronePosition){
+        // Returns true if dronePosition is within range of the charging station
+        // Otherwise, returns false
+
         double distanceToDrone = this.getDistanceToPosition(dronePosition);
         return distanceToDrone <= this.RANGE;
     }
 
     public double takeCoins(double droneCoins){
+        // Drains coins from the charging station
+        // Returns the amount of coins drained
+
         double coinsToTake = this.coins;
 
         // Account for edge case where drone has less coins than the coin deficit
@@ -31,6 +37,9 @@ public class ChargingStation {
     }
 
     public double takePower(double dronePower){
+        // Drains power from the charging station
+        // Returns the amount of power drained
+
         double powerToTake = this.power;
 
         // Account for edge case where drone has less power than the power deficit
@@ -44,6 +53,8 @@ public class ChargingStation {
     }
 
     public double getDistanceToPosition(Position position){
+        // Returns euclidean distance from charging station to position
+
         return Math.sqrt(Math.pow((this.position.latitude - position.latitude), 2) +
                 Math.pow((this.position.longitude - position.longitude), 2));
     }
