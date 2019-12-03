@@ -27,7 +27,7 @@ public class Map {
             e.printStackTrace();
         }
 
-        chargingStations = loadPowerStations(this.mapFeatures);
+        chargingStations = loadChargingStations(this.mapFeatures);
         droneFlightPath = new ArrayList<Point>();
     }
 
@@ -40,7 +40,7 @@ public class Map {
         return FeatureCollection.fromJson(mapJson);
     }
 
-    private ChargingStation[] loadPowerStations(FeatureCollection mapFeatures){
+    private ChargingStation[] loadChargingStations(FeatureCollection mapFeatures){
         int numberOfStations = mapFeatures.features().size();
         ChargingStation[] chargingStations = new ChargingStation[numberOfStations];
 
@@ -61,16 +61,18 @@ public class Map {
         return chargingStations;
     }
 
-    public ChargingStation getInRangePowerStation(Position dronePosition){
+    public ChargingStation getInRangeChargingStation(Position dronePosition){
         ChargingStation nearestStation = null;
         double nearestDistance = 100000000;
 
         for(int i = 0; i < this.chargingStations.length; i++){
-            double distanceToPowerStation = this.chargingStations[i].getDistanceToPosition(dronePosition);
-            boolean inRange = this.chargingStations[i].inRange(dronePosition);
+            ChargingStation cs = this.chargingStations[i];
+
+            double distanceToPowerStation = cs.getDistanceToPosition(dronePosition);
+            boolean inRange = cs.inRange(dronePosition);
 
             if((inRange && distanceToPowerStation < nearestDistance)){
-                nearestStation = this.chargingStations[i];
+                nearestStation = cs;
                 nearestDistance = distanceToPowerStation;
             }
         }

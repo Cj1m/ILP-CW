@@ -26,9 +26,8 @@ public abstract class Drone {
         this.map.addFlightPathPoint(startPosition);
     }
 
-    //TODO MAYBE PROteCted
-    // Method should be implemented by StatelessDrone and StatefulDrone
-    abstract Direction pickDirection();
+    // Must be implemented by StatelessDrone and StatefulDrone
+    protected abstract Direction pickDirection();
 
     public void move(){
         if(!hasPowerToMove()){
@@ -48,7 +47,7 @@ public abstract class Drone {
     }
 
     public void collectPowerAndCoins(){
-        ChargingStation nearestStation = map.getInRangePowerStation(this.position);
+        ChargingStation nearestStation = map.getInRangeChargingStation(this.position);
 
         if(nearestStation != null){
             this.coins += nearestStation.takeCoins(this.coins);

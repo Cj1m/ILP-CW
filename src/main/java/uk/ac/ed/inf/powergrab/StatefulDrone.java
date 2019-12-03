@@ -3,41 +3,45 @@ package uk.ac.ed.inf.powergrab;
 import java.util.ArrayList;
 
 public class StatefulDrone extends Drone {
+    private Position targetPosition;
     private ArrayList<Position> visitedPositions;
 
     public StatefulDrone(Position startPosition, Map map, Long seed) {
         super(startPosition, map, seed);
+        this.targetPosition = getTargetChargingStationPosition();
         this.visitedPositions = new ArrayList<Position>();
     }
 
     public void move(){
         super.move();
 
+        // Find a new target position when target position is reached
+        if(this.position.equals(this.targetPosition)) this.targetPosition = getTargetChargingStationPosition();
+
         // Record move
         this.visitedPositions.add(this.position);
     }
 
     @Override
-    Direction pickDirection() {
-        Position targetPosition = getTargetPowerStationPosition();
+    protected Direction pickDirection() {
+        // Determine angle to move
+        double angleToTarget = getAngleToTargetPosition();
 
-        double deltaLatitude = targetPosition.latitude - this.position.latitude;
-        double deltaLongitude = targetPosition.longitude - this.position.longitude;
-
-        double angleToTargetPosition = Math.toDegrees(Math.atan2(deltaLongitude, deltaLatitude));
-
-        if(angleToTargetPosition < 0) angleToTargetPosition += 360;
-
-        Direction directionToMove = getClosestDirectionToAngle(angleToTargetPosition);
+        // Determine the closest Direction to the desired angle
+        Direction directionToMove = getClosestDirectionToAngle(angleToTarget);
 
         return directionToMove;
     }
 
     private Direction getClosestDirectionToAngle(double angle){
+        // Returns a Direction which is approximately in the direction of angle
+        // while avoiding going out of bounds and negative charging stations
+
         Direction[] allDirections = Direction.values();
         Direction bestDirection = null;
         double leastError = 360;
         Direction reverseDirection = null;
+
         for(int i = 0; i < allDirections.length; i++){
             Direction direction = allDirections[i];
             Position nextPosition = this.position.nextPosition(direction);
@@ -47,64 +51,80 @@ public class StatefulDrone extends Drone {
                 continue;
             }
 
+            // Skip directions which will revert drone back to its previous position
+            // This helps to avoid drone getting stuck in forward-reverse loop
             if(this.visitedPositions.size() > 1){
-                if(this.visitedPositions.get(this.visitedPositions.size() - 2).equals(nextPosition)){
+                Position previousPosition = this.visitedPositions.get(this.visitedPositions.size() - 2);
+                if(previousPosition.equals(nextPosition)){
+                    // Store reverse direction in case drone has to resort to this
                     reverseDirection = direction;
                     continue;
                 }
             }
 
-            ChargingStation psAtDirection = this.map.getInRangePowerStation(nextPosition);
-            if(psAtDirection != null){
-                if(psAtDirection.getCoins() < 0){
+            // Skip directions which lead to negative charging stations
+            ChargingStation csAtDirection = this.map.getInRangeChargingStation(nextPosition);
+            if(csAtDirection != null){
+                if(csAtDirection.getCoins() < 0){
                     continue;
                 }
             }
 
-            double directionAngle = direction.degrees();
-
             // Get difference between angles
             // Account for fact 0 is close to 359 degrees
+            double directionAngle = direction.degrees();
             double error = 180 - Math.abs(Math.abs(angle - directionAngle) - 180);
 
             if(error < leastError){
                 bestDirection = direction;
                 leastError = error;
             }
-
         }
 
-        if(bestDirection == null){
-            bestDirection = reverseDirection;
-        }
+        // In some cases the only available direction is the reverse direction
+        if(bestDirection == null) bestDirection = reverseDirection;
 
         return bestDirection;
     }
 
-    private Position getTargetPowerStationPosition(){
+    private Position getTargetChargingStationPosition(){
+        // Returns position of charging station with best heuristic
+
         ChargingStation[] chargingStations = this.map.getChargingStations();
 
-        Position bestPowerStationPosition = chargingStations[0].getPosition();
-        double bestHeuristic = this.calculatePowerStationHeuristic(chargingStations[0]);
-        for(ChargingStation ps : chargingStations){
-            double heuristic = this.calculatePowerStationHeuristic(ps);
+        // Find charging station with the highest heuristic
+        Position bestChargingStationPosition = chargingStations[0].getPosition();
+        double bestHeuristic = this.calculateChargingStationHeuristic(chargingStations[0]);
+        for(ChargingStation cs : chargingStations){
+            double heuristic = this.calculateChargingStationHeuristic(cs);
             if(heuristic > bestHeuristic){
                 bestHeuristic = heuristic;
-                bestPowerStationPosition = ps.getPosition();
+                bestChargingStationPosition = cs.getPosition();
             }
         }
 
-        if(bestHeuristic == 0){
-            bestPowerStationPosition = this.visitedPositions.get(this.visitedPositions.size() - 1);
-        }
-
-        return bestPowerStationPosition;
+        return bestChargingStationPosition;
     }
 
-    private double calculatePowerStationHeuristic(ChargingStation ps){
-        double distanceToPs= ps.getDistanceToPosition(this.position);
+    private double getAngleToTargetPosition(){
+        // Returns bearing of target position relative to drone position
 
-        return (ps.getCoins() + ps.getPower()) / Math.pow(distanceToPs, 3);
+        double deltaLatitude = this.targetPosition.latitude - this.position.latitude;
+        double deltaLongitude = this.targetPosition.longitude - this.position.longitude;
+
+        double angleToTargetPosition = Math.toDegrees(Math.atan2(deltaLongitude, deltaLatitude));
+
+        // Ensure angle is between 0 and 360
+        if(angleToTargetPosition < 0) angleToTargetPosition += 360;
+
+        return angleToTargetPosition;
+    }
+
+    private double calculateChargingStationHeuristic(ChargingStation chargingStation){
+        // Returns heuristic for chargingStation, taking into account power, coins and distance
+
+        double distanceToPs = chargingStation.getDistanceToPosition(this.position);
+        return (chargingStation.getCoins() + chargingStation.getPower()) / Math.pow(distanceToPs, 3);
     }
 
 }

@@ -10,7 +10,7 @@ public class StatelessDrone extends Drone {
     }
 
     @Override
-    public Direction pickDirection(){
+    protected Direction pickDirection(){
         //TODO clean this up, more subroutines
         int maxInd = 0;
         double maxHeuristic = 0;
@@ -24,7 +24,7 @@ public class StatelessDrone extends Drone {
             // Don't consider positions outwith play area
             if (!positionAfterMoving.inPlayArea()) continue;
 
-            ChargingStation chargingStation = this.map.getInRangePowerStation(positionAfterMoving);
+            ChargingStation chargingStation = this.map.getInRangeChargingStation(positionAfterMoving);
             double heuristic = 0;
 
             if(chargingStation != null){
