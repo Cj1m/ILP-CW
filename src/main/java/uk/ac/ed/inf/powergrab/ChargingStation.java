@@ -1,12 +1,12 @@
 package uk.ac.ed.inf.powergrab;
 
-public class PowerStation {
+public class ChargingStation {
     private double coins;
     private double power;
     private Position position;
     private final double RANGE = 0.00025;
 
-    public PowerStation(Position position, double coins, double power){
+    public ChargingStation(Position position, double coins, double power){
         this.position = position;
         this.coins = coins;
         this.power = power;
@@ -48,7 +48,6 @@ public class PowerStation {
                 Math.pow((this.position.longitude - position.longitude), 2));
     }
 
-    //TODO review is these are even used
     public double getCoins(){
         return this.coins;
     }

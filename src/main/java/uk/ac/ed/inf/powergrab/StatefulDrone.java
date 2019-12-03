@@ -54,8 +54,7 @@ public class StatefulDrone extends Drone {
                 }
             }
 
-
-            PowerStation psAtDirection = this.map.getInRangePowerStation(nextPosition);
+            ChargingStation psAtDirection = this.map.getInRangePowerStation(nextPosition);
             if(psAtDirection != null){
                 if(psAtDirection.getCoins() < 0){
                     continue;
@@ -76,18 +75,18 @@ public class StatefulDrone extends Drone {
         }
 
         if(bestDirection == null){
-            bestDirection =reverseDirection;
+            bestDirection = reverseDirection;
         }
 
         return bestDirection;
     }
 
     private Position getTargetPowerStationPosition(){
-        PowerStation[] powerStations = this.map.getPowerStations();
+        ChargingStation[] chargingStations = this.map.getChargingStations();
 
-        Position bestPowerStationPosition = powerStations[0].getPosition();
-        double bestHeuristic = this.calculatePowerStationHeuristic(powerStations[0]);
-        for(PowerStation ps : powerStations){
+        Position bestPowerStationPosition = chargingStations[0].getPosition();
+        double bestHeuristic = this.calculatePowerStationHeuristic(chargingStations[0]);
+        for(ChargingStation ps : chargingStations){
             double heuristic = this.calculatePowerStationHeuristic(ps);
             if(heuristic > bestHeuristic){
                 bestHeuristic = heuristic;
@@ -102,10 +101,10 @@ public class StatefulDrone extends Drone {
         return bestPowerStationPosition;
     }
 
-    private double calculatePowerStationHeuristic(PowerStation ps){
+    private double calculatePowerStationHeuristic(ChargingStation ps){
         double distanceToPs= ps.getDistanceToPosition(this.position);
 
-        return (ps.getCoins() + ps.getPower()) / Math.pow(distanceToPs,3);
+        return (ps.getCoins() + ps.getPower()) / Math.pow(distanceToPs, 3);
     }
 
 }

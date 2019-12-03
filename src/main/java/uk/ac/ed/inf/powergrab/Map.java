@@ -16,22 +16,22 @@ import com.mapbox.geojson.Point;
 import org.apache.commons.io.IOUtils;
 
 public class Map {
-    private PowerStation[] powerStations;
+    private ChargingStation[] chargingStations;
     private FeatureCollection mapFeatures;
     private ArrayList<Point> droneFlightPath;
 
     public Map(String day, String month, String year) {
         try {
-            mapFeatures = loadMap(day, month, year);
+            mapFeatures = loadGeoJSONMap(day, month, year);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        powerStations = loadPowerStations(this.mapFeatures);
+        chargingStations = loadPowerStations(this.mapFeatures);
         droneFlightPath = new ArrayList<Point>();
     }
 
-    public FeatureCollection loadMap(String day, String month, String year) throws IOException {
+    private FeatureCollection loadGeoJSONMap(String day, String month, String year) throws IOException {
         String date = year + '/' + month + '/' + day;
         String mapString = "http://homepages.inf.ed.ac.uk/stg/powergrab/"+date+"/powergrabmap.geojson";
         URL mapUrl = new URL(mapString);
@@ -40,9 +40,9 @@ public class Map {
         return FeatureCollection.fromJson(mapJson);
     }
 
-    public PowerStation[] loadPowerStations(FeatureCollection mapFeatures){
+    private ChargingStation[] loadPowerStations(FeatureCollection mapFeatures){
         int numberOfStations = mapFeatures.features().size();
-        PowerStation[] powerStations = new PowerStation[numberOfStations];
+        ChargingStation[] chargingStations = new ChargingStation[numberOfStations];
 
         for(int i = 0 ; i < numberOfStations; i++){
             Feature mapFeature =  mapFeatures.features().get(i);
@@ -54,23 +54,23 @@ public class Map {
             double longitude = ((Point) mapFeature.geometry()).longitude();
             Position position = new Position(latitude, longitude);
 
-            PowerStation powerStation = new PowerStation(position, coins, power);
-            powerStations[i] = powerStation;
+            ChargingStation chargingStation = new ChargingStation(position, coins, power);
+            chargingStations[i] = chargingStation;
         }
 
-        return powerStations;
+        return chargingStations;
     }
 
-    public PowerStation getInRangePowerStation(Position dronePosition){
-        PowerStation nearestStation = null;
+    public ChargingStation getInRangePowerStation(Position dronePosition){
+        ChargingStation nearestStation = null;
         double nearestDistance = 100000000;
 
-        for(int i = 0; i < this.powerStations.length; i++){
-            double distanceToPowerStation = this.powerStations[i].getDistanceToPosition(dronePosition);
-            boolean inRange = this.powerStations[i].inRange(dronePosition);
+        for(int i = 0; i < this.chargingStations.length; i++){
+            double distanceToPowerStation = this.chargingStations[i].getDistanceToPosition(dronePosition);
+            boolean inRange = this.chargingStations[i].inRange(dronePosition);
 
             if((inRange && distanceToPowerStation < nearestDistance)){
-                nearestStation = this.powerStations[i];
+                nearestStation = this.chargingStations[i];
                 nearestDistance = distanceToPowerStation;
             }
         }
@@ -78,11 +78,9 @@ public class Map {
         return nearestStation;
     }
 
-    public PowerStation[] getPowerStations(){
+    public ChargingStation[] getChargingStations(){
         // Returns all power stations on the map
-        // Used only by stateful drone
-
-        return this.powerStations;
+        return this.chargingStations;
     }
 
     public void addFlightPathPoint(Position dronePosition){
@@ -109,7 +107,7 @@ public class Map {
         fileWriter.close();
     }
 
-    public FeatureCollection getMapWithFlightPath(){
+    private FeatureCollection getMapWithFlightPath(){
         //Create LineString Feature with drone flight path points
         LineString flightPathLineString = LineString.fromLngLats(this.droneFlightPath);
         Feature flightPathFeature = Feature.fromGeometry(flightPathLineString);
