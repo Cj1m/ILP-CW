@@ -7,7 +7,6 @@ import junit.framework.TestSuite;
 public class StatefulDroneTest extends TestCase {
 
     private Map map;
-    private Long seed;
 
     /**
      * Create the test case
@@ -17,7 +16,6 @@ public class StatefulDroneTest extends TestCase {
     public StatefulDroneTest(String testName) {
         super( testName );
         this.map = new Map("16","10","2019");
-        this.seed = 5678L;
     }
 
     /**
@@ -30,7 +28,7 @@ public class StatefulDroneTest extends TestCase {
     public void testPickDirection(){
         //Position just south of a positive power station
         Position position = new Position(55.9457488 - 0.00025,-3.1895536);
-        StatefulDrone drone = new StatefulDrone(position, this.map, this.seed);
+        StatefulDrone drone = new StatefulDrone(position, this.map);
 
         Direction directionToMove = drone.pickDirection();
 
@@ -40,7 +38,7 @@ public class StatefulDroneTest extends TestCase {
     public void testAlwaysInPlayArea(){
         //Position just south of a positive power station
         Position position = new Position(55.944425, -3.188396);
-        StatefulDrone drone = new StatefulDrone(position, this.map, this.seed);
+        StatefulDrone drone = new StatefulDrone(position, this.map);
 
         boolean alwaysInPlayArea = true;
         for(int i = 0; i < 250; i++){
@@ -57,7 +55,7 @@ public class StatefulDroneTest extends TestCase {
     public void testNeverLoseCoins(){
         //Position just south of a positive power station
         Position position = new Position(55.944425, -3.188396);
-        StatefulDrone drone = new StatefulDrone(position, this.map, this.seed);
+        StatefulDrone drone = new StatefulDrone(position, this.map);
         double previousCoins = 0;
 
         boolean neverLoseCoins = true;

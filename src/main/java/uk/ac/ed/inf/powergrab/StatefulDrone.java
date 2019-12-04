@@ -6,12 +6,13 @@ public class StatefulDrone extends Drone {
     private Position targetPosition;
     private ArrayList<Position> visitedPositions;
 
-    public StatefulDrone(Position startPosition, Map map, Long seed) {
-        super(startPosition, map, seed);
+    public StatefulDrone(Position startPosition, Map map) {
+        super(startPosition, map);
         this.targetPosition = getTargetChargingStationPosition();
         this.visitedPositions = new ArrayList<Position>();
     }
 
+    @Override
     public void move(){
         super.move();
 

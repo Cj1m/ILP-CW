@@ -4,9 +4,6 @@ public class Position {
 	public double latitude;
 	public double longitude;
 
-	// Distance drone can travel in one move
-	private final double travelDistance = 0.0003;
-
 	public Position(double latitude, double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -14,8 +11,8 @@ public class Position {
 
 	public Position nextPosition(Direction direction) {
 		// Calculate the resulting coordinates from moving in the given direction
-		double nextLatitude = this.latitude + this.travelDistance * direction.cos();
-		double nextLongitude = this.longitude + this.travelDistance * direction.sin();
+		double nextLatitude = this.latitude + Drone.TRAVEL_DISTANCE * direction.cos();
+		double nextLongitude = this.longitude + Drone.TRAVEL_DISTANCE * direction.sin();
 
 		return new Position(nextLatitude, nextLongitude);
 	}

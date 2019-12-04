@@ -32,6 +32,8 @@ public class Map {
     }
 
     private FeatureCollection loadGeoJSONMap(String day, String month, String year) throws IOException {
+        // Parse retrieved GeoJSON file as a FeatureCollection
+
         String date = year + '/' + month + '/' + day;
         String mapString = "http://homepages.inf.ed.ac.uk/stg/powergrab/"+date+"/powergrabmap.geojson";
         URL mapUrl = new URL(mapString);
@@ -41,6 +43,8 @@ public class Map {
     }
 
     private ChargingStation[] loadChargingStations(FeatureCollection mapFeatures){
+        // Extracts and loads the charging stations from mapFeatures
+
         int numberOfStations = mapFeatures.features().size();
         ChargingStation[] chargingStations = new ChargingStation[numberOfStations];
 
@@ -62,6 +66,8 @@ public class Map {
     }
 
     public ChargingStation getInRangeChargingStation(Position dronePosition){
+        // Returns in range charging station
+
         ChargingStation nearestStation = null;
         double nearestDistance = 100000000;
 
@@ -81,7 +87,7 @@ public class Map {
     }
 
     public ChargingStation[] getChargingStations(){
-        // Returns all power stations on the map
+        // Returns all charging stations on the map
         return this.chargingStations;
     }
 
@@ -94,6 +100,8 @@ public class Map {
     }
 
     public void saveMapToFile(String droneType, String day, String month, String year) throws IOException {
+        // Saves map as a GeoJSON file
+
         // Get map with drone flight path
         FeatureCollection map = getMapWithFlightPath();
 
@@ -110,20 +118,24 @@ public class Map {
     }
 
     private FeatureCollection getMapWithFlightPath(){
-        //Create LineString Feature with drone flight path points
+        // Returns original map with added drone flight path features
+
+        // Create LineString Feature with drone flight path points
         LineString flightPathLineString = LineString.fromLngLats(this.droneFlightPath);
         Feature flightPathFeature = Feature.fromGeometry(flightPathLineString);
 
-        //Add flight path feature to the map features
+        // Add flight path feature to the map features
         ArrayList<Feature> features = (ArrayList<Feature>) this.mapFeatures.features();
         features.add(flightPathFeature);
 
-        //Create the map from all the features
+        // Create the map from all the features
         FeatureCollection mapWithFlightPath = FeatureCollection.fromFeatures(features);
         return mapWithFlightPath;
     }
 
     private String getJSONFromURL(URL mapUrl) throws IOException {
+        // Retrieves the GeoJSON file from the provided mapUrl
+
         HttpURLConnection mapConn = (HttpURLConnection) mapUrl.openConnection();
         mapConn.setReadTimeout(10000); // milliseconds
         mapConn.setConnectTimeout(15000); // milliseconds

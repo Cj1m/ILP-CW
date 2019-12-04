@@ -2,16 +2,18 @@ package uk.ac.ed.inf.powergrab;
 
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class StatelessDrone extends Drone {
+    private Random rnd;
 
     public StatelessDrone(Position startPosition, Map map, Long seed) {
-        super(startPosition, map, seed);
+        super(startPosition, map);
+        this.rnd = new Random(seed);
     }
 
     @Override
     protected Direction pickDirection(){
-        //TODO clean this up, more subroutines
         int maxInd = 0;
         double maxHeuristic = 0;
         Direction[] possibleDirections = Direction.values();

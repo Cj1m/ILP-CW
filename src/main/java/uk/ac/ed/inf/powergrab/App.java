@@ -29,7 +29,7 @@ public class App
         if(droneType.equals("stateless")){
             drone = new StatelessDrone(startPosition, map, seed);
         }else if (droneType.equals("stateful")){
-            drone = new StatefulDrone(startPosition, map, seed);
+            drone = new StatefulDrone(startPosition, map);
         }else{
             // Drone must be either stateless or stateful
             throw new IllegalArgumentException();

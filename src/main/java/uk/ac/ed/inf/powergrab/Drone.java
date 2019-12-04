@@ -2,24 +2,22 @@ package uk.ac.ed.inf.powergrab;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Random;
 import java.util.StringJoiner;
 
 public abstract class Drone {
-    protected Random rnd;
+    private StringJoiner movementLog;
+    private final double POWER_TO_MOVE = 1.25;
     protected Map map;
     protected Position position;
     protected double coins;
     protected double power;
 
-    private StringJoiner movementLog;
-    private final double POWER_TO_MOVE = 1.25;
+    public static final double TRAVEL_DISTANCE = 0.0003;
 
-    public Drone(Position startPosition, Map map, Long seed){
+    public Drone(Position startPosition, Map map){
         this.position = startPosition;
         this.power = 250;
         this.map = map;
-        this.rnd = new Random(seed);
         this.movementLog = new StringJoiner("\n");
 
         // Add start position to flight path
@@ -30,6 +28,8 @@ public abstract class Drone {
     protected abstract Direction pickDirection();
 
     public void move(){
+        // Moves drone by 1 step
+
         // Only move if drone has sufficient power
         if(!hasPowerToMove()) return;
 
@@ -48,7 +48,7 @@ public abstract class Drone {
         this.logMovement(priorPosition, directionToMove, this.position, this.coins, this.power);
     }
 
-    public void collectPowerAndCoins(){
+    protected void collectPowerAndCoins(){
         // Checks if there is a charging station in range, charges if so
 
         ChargingStation nearestStation = map.getInRangeChargingStation(this.position);
@@ -59,7 +59,7 @@ public abstract class Drone {
         }
     }
 
-    public boolean hasPowerToMove(){
+    private boolean hasPowerToMove(){
         return this.power >= this.POWER_TO_MOVE;
     }
 
