@@ -3,12 +3,12 @@ package uk.ac.ed.inf.powergrab;
 import java.util.ArrayList;
 
 public class StatefulDrone extends Drone {
-    private Position targetPosition;
+    private ChargingStation targetStation;
     private ArrayList<Position> visitedPositions;
 
     public StatefulDrone(Position startPosition, Map map) {
         super(startPosition, map);
-        this.targetPosition = getTargetChargingStationPosition();
+        this.targetStation = getTargetChargingStation();
         this.visitedPositions = new ArrayList<Position>();
     }
 
@@ -16,8 +16,9 @@ public class StatefulDrone extends Drone {
     public void move(){
         super.move();
 
-        // Find a new target position when target position is reached
-        if(this.position.equals(this.targetPosition)) this.targetPosition = getTargetChargingStationPosition();
+        // Find a new target charging station when current target charging station is reached
+        ChargingStation inRangeStation = this.map.getInRangeChargingStation(this.position);
+        if(targetStation.equals(inRangeStation)) this.targetStation = getTargetChargingStation();
 
         // Record move
         this.visitedPositions.add(this.position);
@@ -88,30 +89,33 @@ public class StatefulDrone extends Drone {
         return bestDirection;
     }
 
-    private Position getTargetChargingStationPosition(){
+    private ChargingStation getTargetChargingStation(){
         // Returns position of charging station with best heuristic
 
         ChargingStation[] chargingStations = this.map.getChargingStations();
 
-        // Find charging station with the highest heuristic
-        Position bestChargingStationPosition = chargingStations[0].getPosition();
+        // Set initial 'best' values
+        ChargingStation bestChargingStation = chargingStations[0];
         double bestHeuristic = this.calculateChargingStationHeuristic(chargingStations[0]);
+
+        // Find charging station with the highest heuristic
         for(ChargingStation cs : chargingStations){
             double heuristic = this.calculateChargingStationHeuristic(cs);
             if(heuristic > bestHeuristic){
                 bestHeuristic = heuristic;
-                bestChargingStationPosition = cs.getPosition();
+                bestChargingStation = cs;
             }
         }
 
-        return bestChargingStationPosition;
+        return bestChargingStation;
     }
 
     private double getAngleToTargetPosition(){
         // Returns bearing of target position relative to drone position
 
-        double deltaLatitude = this.targetPosition.latitude - this.position.latitude;
-        double deltaLongitude = this.targetPosition.longitude - this.position.longitude;
+        Position targetPosition = this.targetStation.getPosition();
+        double deltaLatitude = targetPosition.latitude - this.position.latitude;
+        double deltaLongitude = targetPosition.longitude - this.position.longitude;
 
         double angleToTargetPosition = Math.toDegrees(Math.atan2(deltaLongitude, deltaLatitude));
 
@@ -124,8 +128,8 @@ public class StatefulDrone extends Drone {
     private double calculateChargingStationHeuristic(ChargingStation chargingStation){
         // Returns heuristic for chargingStation, taking into account power, coins and distance
 
-        double distanceToPs = chargingStation.getDistanceToPosition(this.position);
-        return (chargingStation.getCoins() + chargingStation.getPower()) / Math.pow(distanceToPs, 3);
+        double distanceToCs = chargingStation.getDistanceToPosition(this.position);
+        return (chargingStation.getCoins() + chargingStation.getPower()) / Math.pow(distanceToCs, 3);
     }
 
 }
