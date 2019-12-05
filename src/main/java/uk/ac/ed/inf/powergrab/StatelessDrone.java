@@ -45,9 +45,12 @@ public class StatelessDrone extends Drone {
         }
 
         Direction direction;
+        boolean surroundedByRedStations = zeroStationsIndices.size() == 0;
+        boolean noGreenStations = maxHeuristic == 0;
 
-        // Case where there are no green stations in range
-        if(maxHeuristic == 0){
+        if(noGreenStations && !surroundedByRedStations){
+            // Case where there are no green stations in range
+
             // Choose a random 'safe' direction:
             int randomDirectionIndex = rnd.nextInt(zeroStationsIndices.size());
             int randomZeroIndex = zeroStationsIndices.get(randomDirectionIndex);
